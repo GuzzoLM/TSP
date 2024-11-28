@@ -1,6 +1,5 @@
 package guzzolm.tutorial.tsp.impl;
 
-import guzzolm.tutorial.tsp.DistanceCalculator;
 import guzzolm.tutorial.tsp.TspSolver;
 
 import java.util.ArrayList;

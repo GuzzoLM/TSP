@@ -5,37 +5,10 @@ import guzzolm.tutorial.tsp.TspSolver;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
 
 public class BruteForceSolver implements TspSolver {
-    private static final int TIMEOUT_SECONDS = 1;
-
     @Override
     public int[] solve(int[][] distanceMatrix) {
-        var executor = Executors.newSingleThreadExecutor();
-
-        var future = executor.submit(() -> solveImpl(distanceMatrix));
-
-        try {
-            // Attempt to retrieve the result within the timeout period
-            return future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
-        } catch (TimeoutException e) {
-            System.out.println("Computation timed out after " + TIMEOUT_SECONDS + " seconds.");
-            return null; // Or handle appropriately (e.g., return a partial or empty solution)
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-            return null; // Handle unexpected errors
-        } finally {
-            executor.shutdownNow(); // Ensure the computation thread is stopped
-        }
-    }
-
-    @Override
-    public String getName() {
-        return "BruteForce";
-    }
-
-    private int[] solveImpl(int[][] distanceMatrix){
         var cities = new int[distanceMatrix.length - 1];
         for (int i = 1; i < distanceMatrix.length; i++) {
             cities[i - 1] = i;
@@ -56,6 +29,11 @@ public class BruteForceSolver implements TspSolver {
         }
 
         return bestRoute;
+    }
+
+    @Override
+    public String getName() {
+        return "BruteForce";
     }
 
     private List<int[]> getRoutes(int[] cities, boolean[] visited, int[] route,  int start){

@@ -1,9 +1,15 @@
 package guzzolm.tutorial.tsp;
 
 import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
 
 public class Benchmark {
+    private static final int TIMEOUT_SECONDS = 1;
+
     private final Map<Integer, int[][]> DistanceMatrices;
     private final List<TspSolver> Solvers;
     private final Map<String, List<BenchmarkResult>> Results = new HashMap<>();
@@ -18,17 +24,35 @@ public class Benchmark {
     }
 
     public void runBenchmarks() {
-        for (TspSolver solver : Solvers) {
-            for (var distanceMatrixItem : DistanceMatrices.keySet()) {
-                var distanceMatrix = DistanceMatrices.get(distanceMatrixItem);
-                var startTime = System.nanoTime();
-                var route = solver.solve(distanceMatrix);
-                var endTime = System.nanoTime();
+        var executor = Executors.newSingleThreadExecutor();
 
-                var result = new BenchmarkResult(startTime, endTime, route, distanceMatrix, distanceMatrixItem);
+        try{
+            for (TspSolver solver : Solvers) {
+                for (var distanceMatrixItem : DistanceMatrices.keySet()) {
+                    var distanceMatrix = DistanceMatrices.get(distanceMatrixItem);
+                    BenchmarkResult result;
+                    var startTime = System.nanoTime();
 
-                Results.computeIfAbsent(solver.getName(), x -> new ArrayList<>()).add(result);
+                    var future = executor.submit(() -> solver.solve(distanceMatrix));
+
+                    try {
+                        // Attempt to retrieve the result within the timeout period
+                        var route = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                        var endTime = System.nanoTime();
+                        result = new BenchmarkResult(startTime, endTime, route, distanceMatrix, distanceMatrixItem);
+                    } catch (TimeoutException e) {
+                        System.out.println("Computation timed out after " + TIMEOUT_SECONDS + " seconds.");
+                        var endTime = System.nanoTime();
+                        result = new BenchmarkResult(startTime, endTime, null, distanceMatrix, distanceMatrixItem);
+                    } catch (InterruptedException | ExecutionException e) {
+                        throw new RuntimeException(e);
+                    }
+
+                    Results.computeIfAbsent(solver.getName(), x -> new ArrayList<>()).add(result);
+                }
             }
+        } finally {
+            executor.shutdownNow(); // Ensure the computation thread is stopped
         }
     }
 
