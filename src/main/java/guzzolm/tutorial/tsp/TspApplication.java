@@ -1,6 +1,7 @@
 package guzzolm.tutorial.tsp;
 
 import guzzolm.tutorial.tsp.impl.BruteForceSolver;
+import guzzolm.tutorial.tsp.impl.HeldKarpSolver;
 import guzzolm.tutorial.tsp.impl.RandomSolver;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
@@ -14,7 +15,8 @@ public class TspApplication {
         var definitions = getProblemsDefinitions();
         var benchmark = new Benchmark(definitions);
         benchmark.addSolver(new RandomSolver());
-        benchmark.addSolver(new BruteForceSolver());
+        //benchmark.addSolver(new BruteForceSolver());
+        benchmark.addSolver(new HeldKarpSolver());
 
         benchmark.runBenchmarks();
         var result = benchmark.getAggregatedResults();

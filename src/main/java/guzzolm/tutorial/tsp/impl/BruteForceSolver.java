@@ -8,6 +8,11 @@ import java.util.List;
 
 public class BruteForceSolver implements TspSolver {
     @Override
+    public String getName() {
+        return "BruteForce";
+    }
+
+    @Override
     public int[] solve(int[][] distanceMatrix) {
         var cities = new int[distanceMatrix.length - 1];
         for (int i = 1; i < distanceMatrix.length; i++) {
@@ -29,11 +34,6 @@ public class BruteForceSolver implements TspSolver {
         }
 
         return bestRoute;
-    }
-
-    @Override
-    public String getName() {
-        return "BruteForce";
     }
 
     private List<int[]> getRoutes(int[] cities, boolean[] visited, int[] route,  int start){

@@ -31,3 +31,5 @@ build/
 
 ### VS Code ###
 .vscode/
+
+src/main/java/guzzolm/tutorial/tsp/.DS_Store
