@@ -1,5 +1,6 @@
 package guzzolm.tutorial.tsp;
 
+import guzzolm.tutorial.tsp.impl.BranchAndBoundSolver;
 import guzzolm.tutorial.tsp.impl.BruteForceSolver;
 import guzzolm.tutorial.tsp.impl.HeldKarpSolver;
 import org.junit.jupiter.api.Assertions;
@@ -31,6 +32,14 @@ class TspApplicationTests {
     @Test
     void heldKarp() {
         var solver = new HeldKarpSolver();
+        var result = solver.solve(distanceMatrix);
+        var resultingDistance = DistanceCalculator.calculateTotalDistance(result, distanceMatrix);
+        Assertions.assertEquals(optimalDistance, resultingDistance);
+    }
+
+    @Test
+    void branchAndBound() {
+        var solver = new BranchAndBoundSolver();
         var result = solver.solve(distanceMatrix);
         var resultingDistance = DistanceCalculator.calculateTotalDistance(result, distanceMatrix);
         Assertions.assertEquals(optimalDistance, resultingDistance);
