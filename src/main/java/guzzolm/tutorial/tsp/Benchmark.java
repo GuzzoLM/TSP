@@ -21,16 +21,28 @@ public class Benchmark {
     }
 
     public void runBenchmarks() {
+        var executorService = Executors.newSingleThreadExecutor();
         for (TspSolver solver : Solvers) {
             for (var distanceMatrixItem : DistanceMatrices.keySet()) {
 
                 var distanceMatrix = DistanceMatrices.get(distanceMatrixItem);
                 BenchmarkResult result;
+                int[] route = null;
 
+                var future = executorService.submit(() -> solver.solve(distanceMatrix));
                 var startTime = System.nanoTime();
-                var route = solver.solve(distanceMatrix);
-                var endTime = System.nanoTime();
-                result = new BenchmarkResult(startTime, endTime, route, distanceMatrix, distanceMatrixItem);
+
+                try{
+                    route = future.get(TIMEOUT_SECONDS, TimeUnit.SECONDS);
+                    result = new BenchmarkResult(startTime, System.nanoTime(), route, distanceMatrix, distanceMatrixItem);
+
+                } catch (TimeoutException e){
+                    System.err.println("Solver " + solver.getName() + " timed out for distance matrix " + distanceMatrixItem);
+                    future.cancel(true);
+                    result = new BenchmarkResult(startTime, System.nanoTime(), null, distanceMatrix, distanceMatrixItem);
+                } catch (InterruptedException | ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
 
                 Results.computeIfAbsent(solver.getName(), x -> new ArrayList<>()).add(result);
             }

@@ -1,5 +1,6 @@
 package guzzolm.tutorial.tsp;
 
+import guzzolm.tutorial.tsp.impl.BranchAndBoundSolver;
 import guzzolm.tutorial.tsp.impl.BruteForceSolver;
 import guzzolm.tutorial.tsp.impl.HeldKarpSolver;
 import guzzolm.tutorial.tsp.impl.RandomSolver;
@@ -7,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 @SpringBootApplication
 public class TspApplication {
@@ -15,8 +17,9 @@ public class TspApplication {
         var definitions = getProblemsDefinitions();
         var benchmark = new Benchmark(definitions);
         benchmark.addSolver(new RandomSolver());
-        //benchmark.addSolver(new BruteForceSolver());
+        benchmark.addSolver(new BruteForceSolver());
         benchmark.addSolver(new HeldKarpSolver());
+        benchmark.addSolver(new BranchAndBoundSolver());
 
         benchmark.runBenchmarks();
         var result = benchmark.getAggregatedResults();
@@ -71,7 +74,7 @@ public class TspApplication {
     private static Map<Integer, int[][]> getProblemsDefinitions(){
         var maxDistance = 100;
         var numberOfExamples = 5;
-        var exampleSizes = new int[] {5, 10, 15, 20};
+        var exampleSizes = IntStream.range(3, 18).toArray();
         var examples = new HashMap<Integer, int[][]>();
         var setId = 0;
 
