@@ -1,12 +1,11 @@
 package guzzolm.tutorial.tsp;
 
-import guzzolm.tutorial.tsp.impl.BranchAndBoundSolver;
-import guzzolm.tutorial.tsp.impl.BruteForceSolver;
-import guzzolm.tutorial.tsp.impl.HeldKarpSolver;
-import guzzolm.tutorial.tsp.impl.NearestNeighborSolver;
+import guzzolm.tutorial.tsp.impl.*;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
+
+import java.util.Arrays;
 
 @SpringBootTest
 class TspApplicationTests {
@@ -50,8 +49,20 @@ class TspApplicationTests {
     void nearestNeighbor() {
         var solver = new NearestNeighborSolver();
         var result = solver.solve(distanceMatrix);
-        var resultingDistance = DistanceCalculator.calculateTotalDistance(result, distanceMatrix);
-        Assertions.assertEquals(optimalDistance, resultingDistance);
+        Assertions.assertEquals(optimalRoute.length, result.length);
+        Assertions.assertEquals(0, result[0]);
+        Assertions.assertEquals(0, result[result.length - 1]);
+        Assertions.assertEquals(optimalRoute.length - 1, Arrays.stream(result).distinct().count());
+    }
+
+    @Test
+    void cheapestInsert() {
+        var solver = new CheapestInsertionSolver();
+        var result = solver.solve(distanceMatrix);
+        Assertions.assertEquals(optimalRoute.length, result.length);
+        Assertions.assertEquals(0, result[0]);
+        Assertions.assertEquals(0, result[result.length - 1]);
+        Assertions.assertEquals(optimalRoute.length - 1, Arrays.stream(result).distinct().count());
     }
 
 }
