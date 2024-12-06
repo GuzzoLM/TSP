@@ -3,6 +3,7 @@ package guzzolm.tutorial.tsp;
 import guzzolm.tutorial.tsp.impl.BranchAndBoundSolver;
 import guzzolm.tutorial.tsp.impl.BruteForceSolver;
 import guzzolm.tutorial.tsp.impl.HeldKarpSolver;
+import guzzolm.tutorial.tsp.impl.NearestNeighborSolver;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -40,6 +41,14 @@ class TspApplicationTests {
     @Test
     void branchAndBound() {
         var solver = new BranchAndBoundSolver();
+        var result = solver.solve(distanceMatrix);
+        var resultingDistance = DistanceCalculator.calculateTotalDistance(result, distanceMatrix);
+        Assertions.assertEquals(optimalDistance, resultingDistance);
+    }
+
+    @Test
+    void nearestNeighbor() {
+        var solver = new NearestNeighborSolver();
         var result = solver.solve(distanceMatrix);
         var resultingDistance = DistanceCalculator.calculateTotalDistance(result, distanceMatrix);
         Assertions.assertEquals(optimalDistance, resultingDistance);

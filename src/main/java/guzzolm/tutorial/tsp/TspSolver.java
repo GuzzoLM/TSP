@@ -1,6 +1,6 @@
 package guzzolm.tutorial.tsp;
 
 public interface TspSolver {
-    int[] solve(int[][] distanceMatrix);
     String getName();
+    int[] solve(int[][] distanceMatrix);
 }
